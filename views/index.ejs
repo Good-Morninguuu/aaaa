@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1><%= title %></h1>
+
+ <!-- 数値化部分 -->
+ <input type="file" id="selfile"><br>
+ <textarea id="dturl" readonly></textarea>
+ <!-- 数値化部分 終わり -->
+
+  <!-- 数値化部分2 -->
+ <input type="file" id="selfile2"><br>
+ <textarea id="dturl2" readonly></textarea>
+ <!-- 数値化部分2 終わり -->
+
+ <div id="text-button"><p id="text">認証開始</p></div>
+
+ <script>
+     'use strict';
+
+     let algo;
+     let hex;
+     let hex2;
+
+     //数値化部分prog
+     let obj = document.getElementById("selfile");
+     let dataUrl;
+     obj.addEventListener("change", function(evt){
+         let file = evt.target.files;
+         let reader = new FileReader();
+    
+
+     //dataURL形式でファイルを読み込む
+     reader.readAsDataURL(file[0]);
+
+     //ファイルの読込が終了した時の処理
+     reader.onload = function(){
+         dataUrl = reader.result;
+         
+         //読み込んだdataURLを書き出す
+         //-----------------重要！！----------------------
+         document.getElementById("dturl").value = dataUrl;
+         //-----------------重要！！ 終わり----------------
+         // check the API support:
+         if (!crypto || !crypto.subtle) {
+         throw Error("crypto.subtle is not supported."); // ブラウザ未対応
+         }
+
+         algo = "SHA-256";
+
+         // input data:
+         let str = dataUrl;
+         
+         // generate hash!
+         
+         crypto.subtle.digest(algo, new TextEncoder().encode(str)).then(x => {
+         console.log(`"${str}" => ${algo} (ArrayBuffer):`, x); // ArrayBuffer
+         hex = hexString(x); // convert to hex string.
+         console.log(`"${str}" => ${algo} (Hex):`, hex);
+         });
+
+         /** array buffer to hex string */
+         function hexString(buffer) {
+             let byteArray = new Uint8Array(buffer);
+             let hexCodes = [...byteArray].map(value => {
+             let hexCode = value.toString(16);
+             let paddedHexCode = hexCode.padStart(2, '0');
+             return paddedHexCode;
+         });
+         return hexCodes.join('');
+         }
+             console.log(`"${str}" => ${algo} (Hex):`, hex);
+     }
+     },false);
+     //数値化部分prog 終わり
+
+     //数値化部分prog2
+     let obj2 = document.getElementById("selfile2");
+     let dataUrl2;
+     obj2.addEventListener("change", function(evt){
+         let file2 = evt.target.files;
+         let reader2 = new FileReader();
+     
+
+     //dataURL形式でファイルを読み込む
+     reader2.readAsDataURL(file2[0]);
+
+     //ファイルの読込が終了した時の処理
+     reader2.onload = function(){
+         dataUrl2 = reader2.result;
+         
+         //読み込んだdataURLを書き出す
+         //-----------------重要！！----------------------
+         document.getElementById("dturl2").value = dataUrl2;
+         //-----------------重要！！ 終わり----------------
+
+         // input data:
+         let str2 = dataUrl2;
+
+         // generate hash!2
+         crypto.subtle.digest(algo, new TextEncoder().encode(str2)).then(x => {
+         console.log(`"${str2}" => ${algo} (ArrayBuffer):`, x); // ArrayBuffer
+         hex2 = hexString(x); // convert to hex string.
+         console.log(`"${str2}" => ${algo} (Hex):`, hex2);
+         });
+
+         /** array buffer to hex string  2 */
+         function hexString(buffer) {
+             let byteArray = new Uint8Array(buffer);
+             let hexCodes = [...byteArray].map(value => {
+             let hexCode = value.toString(16);
+             let paddedHexCode = hexCode.padStart(2, '0');
+             return paddedHexCode;
+         });
+         return hexCodes.join('');
+         }
+     
+     }
+     },false);
+     //数値化部分prog2 終わり
+
+     document.getElementById("text-button").onclick = function() {
+     if(hex == hex2) {
+         alert("一致");
+     } else {
+         alert("違います");
+     }
+     };
+
+     
+ </script>
+
+
+
+  </body>
+</html>
